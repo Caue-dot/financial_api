@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Illuminate\Http\Request;
 use App\Services\TransactionService;
 use App\Http\Resources\TransactionResource;
 use App\Http\Resources\TransactionCollection;
@@ -11,10 +12,19 @@ use App\Http\Requests\UpdateTransactionRequest;
 
 class TransactionController extends Controller
 {
-    public function index(){
-        $transactions = Transaction::all();
+    public function index(Request $request){
+        $transactions = Transaction::report_where(['user_id' => $request->user()->id]);
 
-        return new TransactionCollection($transactions);
+        $total_expense = (clone $transactions)->where('type', 'E')->sum('value') ;
+        $total_income = (clone $transactions)->where('type', 'I')->sum('value') ;
+
+        $data = [
+            'transactions' => new TransactionCollection($transactions->get()),
+            'totalExpense' => $total_expense,
+            'totalIncome' => $total_income,
+        ];
+
+        return  $data;
     }
     public function store(StoreTransactionRequest $request, TransactionService $transactionService){
         $data = $request->validated();
