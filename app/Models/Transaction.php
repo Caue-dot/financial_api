@@ -19,6 +19,11 @@ class Transaction extends Model
         'recurrent'
     ];
 
+
+    protected $casts = [
+        'value' => 'decimal:2'
+    ];
+
     public function report(){
         return $this->belongsTo(MonthlyReport::class, 'monthly_report_id');
     }

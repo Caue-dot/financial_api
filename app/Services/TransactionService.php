@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 
 class TransactionService{
@@ -44,6 +45,32 @@ class TransactionService{
     }
     public function list_by_category($category){
         return Transaction::get_all_by_category($category);
+    }
+
+
+    public function categories_info_in_transaction(){
+        $user_id = Auth::user()->id;
+
+        $data =Transaction::selectRaw('category, 
+            SUM(CASE WHEN type = "I" THEN value ELSE 0 END) as totalIncome,
+            SUM(CASE WHEN type = "E" THEN value ELSE 0 END) as totalExpense')
+
+        ->groupBy('category') //Join all the table values that is on the same category
+        ->whereHas('report', function($report) use ($user_id){
+            $report->where('user_id', $user_id);
+        })
+        ->get()
+        
+        ->map(function (Transaction $item){ 
+            return [
+                'name' => $item->category,
+                'totalIncome' => $item->totalIncome,
+                'totalExpense'=> $item->totalExpense,
+                'profit' => (string) number_format($item->totalIncome - $item->totalExpense, 2)
+            ];
+        });
+
+        return $data;
     }
 
 

@@ -100,21 +100,21 @@ class ReportService{
             SUM(CASE WHEN type = "I" THEN value ELSE 0 END) as totalIncome,
             SUM(CASE WHEN type = "E" THEN value ELSE 0 END) as totalExpense')
         ->where('monthly_report_id', $report_id)
-        ->groupBy('category') //Join all the table values that has is on the same category
+        ->groupBy('category') //Join all the table values that is on the same category
         ->whereHas('report', function($report) use ($user_id){
             $report->where('user_id', $user_id);
         })
         ->get()
-        ->keyBy('category')  
         
-        //Chop category from the array to avoid redundancy
         ->map(function (Transaction $item){ 
             return [
+                'name' => $item->category,
                 'totalIncome' => $item->totalIncome,
                 'totalExpense'=> $item->totalExpense,
                 'profit' => (string)($item->totalIncome - $item->totalExpense)
             ];
-        });
+        })
+        ;
 
        
         return $data;

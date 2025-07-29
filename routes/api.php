@@ -19,10 +19,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/user/logout', [AuthController::class, 'logout']);
     
     Route::get('transactions/', [TransactionController::class, 'index']);
+    Route::get('transactions/categories', [TransactionController::class, 'list_all_categories' ]);
+    Route::get('transactions/categories/{category}', [TransactionController::class, 'list_by_category']);
+    
+    Route::get('transactions/{transaction}', [TransactionController::class, 'get_transaction']);
     Route::post('transactions/', [TransactionController::class, 'store']);
     Route::delete('transactions/{transaction}', [TransactionController::class, 'delete']);
     Route::patch('transactions/{transaction}', [TransactionController::class, 'update']);
-    Route::get('transactions/categories/{category}', [TransactionController::class, 'list_by_category']);
 
 
     Route::get('/reports', [ReportController::class, 'get_report']);
