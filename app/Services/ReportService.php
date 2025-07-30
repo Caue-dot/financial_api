@@ -25,8 +25,7 @@ class ReportService{
         $report = MonthlyReport::create(['user_id' => $user_id]);
         $report->refresh();
         
-        $last_report = $this->get_last_report();
-
+        $last_report = $this->get_last_report(exclude_first: true);
         if($last_report){
             $transactionService->recreate_recurrent($report,  $last_report);
         }
@@ -63,15 +62,10 @@ class ReportService{
         return $report;
     }
 
-    public function get_last_report($include_transactions = false){
+    public function get_last_report( $exclude_first = false, $include_transactions = false){
         $user_id = Auth::user()->id;
 
-        $last_report_date = now()->subMonths(5);
-        $last_year =  $last_report_date->format('Y');
-        $last_month =  $last_report_date->format('m');
-
-        $last_report = MonthlyReport::get_report_by_date($last_year, $last_month, $user_id, $include_transactions);
-
+        $last_report = MonthlyReport::get_last_report($user_id, $include_transactions, $exclude_first);
         return $last_report;
     }
 
@@ -115,6 +109,8 @@ class ReportService{
             ];
         })
         ;
+        
+        
 
        
         return $data;

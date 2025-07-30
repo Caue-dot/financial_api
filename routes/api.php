@@ -28,6 +28,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::patch('transactions/{transaction}', [TransactionController::class, 'update']);
 
 
-    Route::get('/reports', [ReportController::class, 'get_report']);
+    Route::get('/reports', [ReportController::class, 'index']);
+    Route::get('/reports/date', [ReportController::class, 'get_report']);
     Route::get('/reports/current', [ReportController::class, 'get_current_report']);
+    Route::get('/reports/{report}', [ReportController::class, 'get_report_by_id']);
 });

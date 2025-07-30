@@ -16,7 +16,7 @@ class MonthlyReportResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $include_categories = $request->query('includeCategories');
+        $include_categories  = (bool) $request->query('includeCategories');
         $reportService = new ReportService;
         return [
             'id' => $this->id,
